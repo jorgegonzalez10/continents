@@ -1,0 +1,6 @@
+class Continent < ApplicationRecord
+  validates :name, presence: true, uniqueness: true
+  belongs_to :user
+  has_many :continent_images
+
+end
