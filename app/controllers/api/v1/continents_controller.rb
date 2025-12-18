@@ -29,7 +29,7 @@ class Api::V1::ContinentsController < ApplicationController
   end
 
   def destroy
-    @continent = Continent.destroy
+    @continent.destroy
     render json: {message:"album deleted"}, status: 303
   end
 
