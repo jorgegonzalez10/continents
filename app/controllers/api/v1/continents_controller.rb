@@ -3,7 +3,13 @@ class Api::V1::ContinentsController < ApplicationController
   before_action :authenticate_user!, only: %i[create update destroy]
 
   def index
-    @continents = Continent.all
+    if current_user
+      @continents = Continent.where(is_public: true)
+                            .or(Continent.where(user: current_user))
+    else
+      @continents = Continent.where(is_public: true)
+    end
+
     render json: serialized(@continents, ContinentSerializer), status: 200
   end
 
@@ -36,7 +42,7 @@ class Api::V1::ContinentsController < ApplicationController
   private
 
   def continent_params
-    params.require(:continent).permit(:name, :user_id, :public)
+    params.require(:continent).permit(:name, :user_id, :is_public)
   end
 
   def set_continent

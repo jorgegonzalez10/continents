@@ -26,6 +26,6 @@ class Api::V1::ContinentImagesController < ApplicationController
   private
 
   def continent_image_params
-    params.require(:continent_image).permit(:name, :continent_id, :public, :photo)
+    params.require(:continent_image).permit(:name, :continent_id, :is_public, :photo)
   end
 end
