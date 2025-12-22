@@ -1,18 +1,26 @@
 class Api::V1::ContinentImagesController < ApplicationController
+
    def index
-    @continent_images = ContinentImage.all
-    render json: serialized(continent_images, ContinentImageSerializer), status: :ok
+    if current_user
+      @continent_images = ContinentImage.joins(:continent)
+                                      .where( continents: {user: current_user}).or(ContinentImage.joins(:continent)
+                                      .where(is_public: true, continents: {is_public: true}))
+    else
+    @continent_images = ContinentImage.joins(:continent)
+                                      .where(is_public: true, continents: {is_public: true})
+    end
+    render json: serialized(@continent_images, ContinentImageSerializer), status: :ok
   end
 
   def create
-    @continent = Continent.find(continent_image_params[:continent_id])
+    @continent = Continent.find(@continent_image_params[:continent_id])
 
     @continent_image = continent.continent_images.build(continent_image_params.except(:continent_id))
 
     if continent_image.save
-      render json: serialized(continent_image, ContinentImageSerializer), status: :created
+      render json: serialized(@continent_image, ContinentImageSerializer), status: :created
     else
-      render json: { errors: continent_image.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: @continent_image.errors.full_messages }, status: :unprocessable_entity
     end
   end
 

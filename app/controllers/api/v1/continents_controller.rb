@@ -13,6 +13,7 @@ class Api::V1::ContinentsController < ApplicationController
     render json: serialized(@continents, ContinentSerializer), status: 200
   end
 
+
   def show
     render json: serialized(@continent, ContinentSerializer), status: 200
   end
