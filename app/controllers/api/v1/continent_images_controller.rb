@@ -6,10 +6,10 @@ class Api::V1::ContinentImagesController < ApplicationController
                                       .where( continents: {user: current_user}).or(ContinentImage.joins(:continent)
                                       .where(is_public: true, continents: {is_public: true}))
     else
-    @continent_images = ContinentImage.joins(:continent)
+      @continent_images = ContinentImage.joins(:continent)
                                       .where(is_public: true, continents: {is_public: true})
     end
-    render json: serialized(@continent_images, ContinentImageSerializer), status: :ok
+      render json: serialized(@continent_images, ContinentImageSerializer), status: :ok
   end
 
   def create
