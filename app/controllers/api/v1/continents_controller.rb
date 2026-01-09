@@ -1,6 +1,7 @@
 class Api::V1::ContinentsController < ApplicationController
   before_action :set_continent, only: %i[show update destroy]
   before_action :authenticate_user!, only: %i[create update destroy]
+  before_action :authorize_continent_owner!, only: %i[update destroy]
 
   def index
     if current_user
@@ -28,10 +29,10 @@ class Api::V1::ContinentsController < ApplicationController
   end
 
   def update
-    if @continent = Continent.update(continent_params)
-      render json: serialized(@continent, ContinentSerializer), status: 204
+    if @continent.update(continent_params)
+      render json: serialized(@continent, ContinentSerializer), status: 200
     else
-      render json: @continent.errors.full_messages
+      render json: @continent.errors.full_messages, status: :unprocessable_entity
     end
   end
 
@@ -48,5 +49,11 @@ class Api::V1::ContinentsController < ApplicationController
 
   def set_continent
     @continent = Continent.find(params[:id])
+  end
+
+  def authorize_continent_owner!
+    unless @continent.user_id == current_user.id
+      render json: { error: "Not authorized to modify this continent" }, status: :forbidden
+    end
   end
 end

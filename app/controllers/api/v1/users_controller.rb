@@ -1,13 +1,16 @@
 class Api::V1::UsersController < ApplicationController
   before_action :set_user, only: %i[show update destroy]
+  before_action :authenticate_user!, except: [:create]
+  before_action :authorize_user!, only: %i[show update destroy]
 
   def index
+    # Solo permite ver todos los usuarios si está autenticado (podrías querer restringir más esto)
     @users = User.all
     render json: serialized(@users, UserSerializer), status: 200
   end
 
   def show
-    render json: serialized(@users, UserSerializer), status: 200
+    render json: serialized(@user, UserSerializer), status: 200
   end
 
   def create
@@ -39,7 +42,13 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def set_user
-    @user = User.fin(params[:id])
+    @user = User.find(params[:id])
+  end
+
+  def authorize_user!
+    unless @user.id == current_user.id
+      render json: { error: "Not authorized to access this user" }, status: :forbidden
+    end
   end
 
 end
